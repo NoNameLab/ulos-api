@@ -85,7 +85,7 @@ A FastAPI-based project for managing tasks, users, and execution logs, using Tor
        modules={"models": ["app.models"]},
        generate_schemas=True  # Set to True for first-time setup
    )
-``
+
 ---
 
 ## Running the Project
