@@ -125,16 +125,21 @@ FastAPI provides an interactive Swagger UI to test the endpoints:
 
 ## Screenshots
 
-!!!Screenshots of your Swagger UI 
+   - **Doc**:
+![image](https://github.com/user-attachments/assets/d135280f-40dd-4d1f-86bf-766de3b354d5)
+
+   - **ReDoc**:
+![image](https://github.com/user-attachments/assets/9d525603-8bec-4091-a404-bd192b4584b8)
 
 ## Database Models
 
-[View All Models in `models.py`](models.py)
+[View All Models in `models.py`]
 
 ## Contributing
 
 Carlos German Monroy Andrade
 201728260
+
 Universidad de los Andes
 
 ### Steps to Contribute
