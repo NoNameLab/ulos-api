@@ -133,7 +133,7 @@ FastAPI provides an interactive Swagger UI to test the endpoints:
 
 ## Database Models
 
-[View All Models in `models.py`]
+[View All Models here](models.py)
 
 ## Contributing
 
