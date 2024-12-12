@@ -133,7 +133,7 @@ Universidad de los Andes
    `git checkout -b feature/your-feature-name`
 ```
 3. Commit your changes:
-```
+
 ```bash  
    `git commit -m "Add your feature"`
 ```
@@ -141,6 +141,6 @@ Universidad de los Andes
 
 ```bash 
    `git push origin feature/your-feature-name`
-
+```
 5. Open a Pull Request.
 
