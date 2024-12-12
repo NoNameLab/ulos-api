@@ -22,7 +22,7 @@ A FastAPI-based project for managing tasks, users, and execution logs, using Tor
 
 ## Features
 
-- **User, Machines, Files and Metrics Management**: CRUD operations for users and the others.
+- **User, Machines, Files, and Metrics Management**: CRUD operations for users, machines, files, and metrics.
 - **Task Management**: Create, update, delete tasks, and manage their states.
 - **State Tracking**: Group and filter tasks by their state.
 - **Error Simulation**: Simulate errors and log them with detailed messages.
@@ -42,36 +42,41 @@ A FastAPI-based project for managing tasks, users, and execution logs, using Tor
 
 1. **Clone the Repository**:
 
-```bash  
-   `git clone https://github.com/YOUR_USERNAME/API-ULOS-DB.git`  
-   `cd API-ULOS-DB`
-```
+   ```bash
+   git clone https://github.com/YOUR_USERNAME/API-ULOS-DB.git
+   cd API-ULOS-DB
+   ```
+
 2. **Create and Activate a Virtual Environment**:
 
    - **Windows**:
 
-```bash  
-     `python -m venv env`  
-     `.\\env\\Scripts\\activate`
-```
+     ```bash
+     python -m venv env
+     .\env\Scripts\activate
+     ```
+
    - **macOS/Linux**:
 
-```bash  
-     `python -m venv env`  
-     `source env/bin/activate`
-```
+     ```bash
+     python -m venv env
+     source env/bin/activate
+     ```
+
 3. **Install Dependencies**:
 
-```bash  
-   `pip install -r requirements.txt`
-```
+   ```bash
+   pip install -r requirements.txt
+   ```
+
 4. **Configure the Database**:
 
    Create a `.env` file in the root folder with your database credentials:
 
-```bash  
-   `DATABASE_URL=postgres://username:password@localhost/ULOS_DB`
-```
+   ```dotenv
+   DATABASE_URL=postgres://username:password@localhost/ULOS_DB
+   ```
+
 5. **Generate Database Schemas (First-Time Setup)**:
 
    When running the project for the first time, you'll need to create the database schema. In your `main.py` file, set `generate_schemas=True` in the Tortoise configuration:
@@ -84,6 +89,17 @@ A FastAPI-based project for managing tasks, users, and execution logs, using Tor
       generate_schemas=True  # Set to True for first-time setup
       ...
    )
+   ```
+
+   After running the project for the first time, **set `generate_schemas` to `False`** to avoid creating duplicates in the database:
+
+   ```python
+   register_tortoise(
+      ...
+      generate_schemas=False  # Set to False after initial setup
+      ...
+   )
+   ```
 
 ---
 
@@ -91,10 +107,13 @@ A FastAPI-based project for managing tasks, users, and execution logs, using Tor
 
 Start the FastAPI server:
 
-```bash  
-`uvicorn main:app --reload`
+```bash
+uvicorn main:app --reload
 ```
+
 Visit the server at [http://127.0.0.1:8000](http://127.0.0.1:8000).
+
+> **Note**: If you're running the project for the first time, ensure that `generate_schemas=True` in `main.py`. After the initial run, change it to `False` to prevent duplicate entries.
 
 ---
 
@@ -125,41 +144,51 @@ FastAPI provides an interactive Swagger UI to test the endpoints:
 
 ## Screenshots
 
-   - **Doc**:
-![image](https://github.com/user-attachments/assets/d135280f-40dd-4d1f-86bf-766de3b354d5)
+- **Swagger UI**:  
+  ![Swagger UI](https://github.com/user-attachments/assets/d135280f-40dd-4d1f-86bf-766de3b354d5)
 
-   - **ReDoc**:
-![image](https://github.com/user-attachments/assets/9d525603-8bec-4091-a404-bd192b4584b8)
+- **ReDoc**:  
+  ![ReDoc](https://github.com/user-attachments/assets/9d525603-8bec-4091-a404-bd192b4584b8)
+
+---
 
 ## Database Models
 
 [View All Models here](models.py)
 
-### Steps to Contribute
+---
 
-1. Fork the repository.
-2. Create a new branch:
+## Contributing
 
-```bash  
-   `git checkout -b feature/your-feature-name`
-```
-3. Commit your changes:
+Please follow these steps:
 
-```bash  
-   `git commit -m "Add your feature"`
-```
-4. Push to the branch:
+1. **Fork the repository**.
+2. **Create a new branch**:
 
-```bash 
-   `git push origin feature/your-feature-name`
-```
-5. Open a Pull Request.
+   ```bash
+   git checkout -b feature/your-feature-name
+   ```
+
+3. **Commit your changes**:
+
+   ```bash
+   git commit -m "Add your feature"
+   ```
+
+4. **Push to the branch**:
+
+   ```bash
+   git push origin feature/your-feature-name
+   ```
+
+5. **Open a Pull Request**.
+
+---
 
 ## Author
 
-Carlos German Monroy Andrade
+**Carlos German Monroy Andrade**  
+**201728260**
 
-201728260
-
-![image](https://github.com/user-attachments/assets/02953e4e-70cc-4b2a-a6ff-330129c2fdea)
+![Author](https://github.com/user-attachments/assets/02953e4e-70cc-4b2a-a6ff-330129c2fdea)
 
