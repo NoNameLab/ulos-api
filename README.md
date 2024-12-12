@@ -76,7 +76,6 @@ A FastAPI-based project for managing tasks, users, and execution logs, using Tor
 
    When running the project for the first time, you'll need to create the database schema. In your `main.py` file, set `generate_schemas=True` in the Tortoise configuration:
 
-   **Add Code Block Here (python)**  
    ```python
    from tortoise.contrib.fastapi import register_tortoise
 
@@ -86,9 +85,7 @@ A FastAPI-based project for managing tasks, users, and execution logs, using Tor
        modules={"models": ["app.models"]},
        generate_schemas=True  # Set to True for first-time setup
    )
-```
-
-
+``
 ---
 
 ## Running the Project
