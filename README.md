@@ -135,13 +135,6 @@ FastAPI provides an interactive Swagger UI to test the endpoints:
 
 [View All Models here](models.py)
 
-## Contributing
-
-Carlos German Monroy Andrade
-201728260
-
-Universidad de los Andes
-
 ### Steps to Contribute
 
 1. Fork the repository.
@@ -161,4 +154,12 @@ Universidad de los Andes
    `git push origin feature/your-feature-name`
 ```
 5. Open a Pull Request.
+
+## Author
+
+Carlos German Monroy Andrade
+
+201728260
+
+![image](https://github.com/user-attachments/assets/02953e4e-70cc-4b2a-a6ff-330129c2fdea)
 
