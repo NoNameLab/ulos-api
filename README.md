@@ -45,8 +45,7 @@ A FastAPI-based project for managing tasks, users, and execution logs, using Tor
 ```bash  
    `git clone https://github.com/YOUR_USERNAME/API-ULOS-DB.git`  
    `cd API-ULOS-DB`
-
-
+```
 2. **Create and Activate a Virtual Environment**:
 
    - **Windows**:
@@ -54,25 +53,25 @@ A FastAPI-based project for managing tasks, users, and execution logs, using Tor
 ```bash  
      `python -m venv env`  
      `.\\env\\Scripts\\activate`
-
+```
    - **macOS/Linux**:
 
 ```bash  
      `python -m venv env`  
      `source env/bin/activate`
-
+```
 3. **Install Dependencies**:
 
 ```bash  
    `pip install -r requirements.txt`
-
+```
 4. **Configure the Database**:
 
    Create a `.env` file in the root folder with your database credentials:
 
 ```bash  
    `DATABASE_URL=postgres://username:password@localhost/ULOS_DB`
-
+```
 ---
 
 ## Running the Project
@@ -81,7 +80,7 @@ Start the FastAPI server:
 
 ```bash  
 `uvicorn main:app --reload`
-
+```
 Visit the server at [http://127.0.0.1:8000](http://127.0.0.1:8000).
 
 ---
@@ -132,12 +131,12 @@ Universidad de los Andes
 
 ```bash  
    `git checkout -b feature/your-feature-name`
-
+```
 3. Commit your changes:
-
+```
 ```bash  
    `git commit -m "Add your feature"`
-
+```
 4. Push to the branch:
 
 ```bash 
