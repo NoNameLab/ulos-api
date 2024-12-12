@@ -80,10 +80,9 @@ A FastAPI-based project for managing tasks, users, and execution logs, using Tor
    from tortoise.contrib.fastapi import register_tortoise
 
    register_tortoise(
-       app,
-       db_url="postgres://username:password@localhost/ULOS_DB",
-       modules={"models": ["app.models"]},
-       generate_schemas=True  # Set to True for first-time setup
+      ...
+      generate_schemas=True  # Set to True for first-time setup
+      ...
    )
 
 ---
