@@ -2,13 +2,8 @@ from tortoise import fields
 from tortoise.models import Model
 
 class Task(Model):
-    id = fields.IntField(pk=True)
-    user_id = fields.IntField()
-    file_name = fields.CharField(max_length=255, null=True)
-    ftp_file_path = fields.CharField(max_length=255, null=True)
-    task_type_id = fields.IntField()
-    parsed_status = fields.IntField(default=0)
-    executed_status = fields.IntField(default=0)
-    state = fields.IntField(default=0)
-    requeue_count = fields.IntField(default=0)
-    feedback = fields.TextField(null=True)
+    id = fields.BigIntField(pk=True)
+    assignment = fields.ForeignKeyField("models.Assignment", related_name="tasks")
+    remote_storage_path = fields.CharField(max_length=255, unique=True)
+    created_by = fields.ForeignKeyField("models.SysUser", related_name="tasks")
+    creation_timestamp = fields.DatetimeField(auto_now_add=True)
