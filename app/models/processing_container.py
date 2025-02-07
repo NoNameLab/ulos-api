@@ -11,6 +11,3 @@ class ProcessingContainer(Model):
     run_command = fields.TextField(null=True)
     created_by = fields.ForeignKeyField("models.SysUser", related_name="created_containers")
     creation_timestamp = fields.DatetimeField(auto_now_add=True)
-
-    class Meta:
-        unique_together = ("task_definition", "processing_stage")

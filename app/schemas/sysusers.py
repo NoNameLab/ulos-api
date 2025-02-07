@@ -2,8 +2,8 @@ from pydantic import BaseModel, EmailStr, validator
 from tortoise.contrib.pydantic import pydantic_model_creator
 from app.models.sysuser import SysUser, RoleEnum
 
-sysuser_pydantic = pydantic_model_creator(SysUser, name="SysUser")
-sysuser_pydanticIn = pydantic_model_creator(SysUser, name="SysUserIn", exclude_readonly=True)
+SysUserPydantic = pydantic_model_creator(SysUser, name="SysUser")
+SysUserPydanticIn = pydantic_model_creator(SysUser, name="SysUserIn", exclude_readonly=True)
 
 class SysUserCreate(BaseModel):
     email: EmailStr
