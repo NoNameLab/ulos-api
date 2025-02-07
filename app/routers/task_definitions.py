@@ -7,13 +7,14 @@ from fastapi import APIRouter, Depends, HTTPException, UploadFile, Form
 from app.auth.dependencies import RoleChecker
 from app.models.processing_stage import ProcessingStage
 from app.models.sysuser import RoleEnum, SysUser
+from app.models.task_definition import TaskDefinition
 from app.schemas.processing_containers import ProcessingContainerCreate
 from app.schemas.processing_stages import ProcessingStageCreate
 from app.schemas.stages_by_task_definitions import StageByTaskDefinitionCreate
 from app.schemas.task_definitions import TaskDefinitionRequest, TaskDefinitionCreate
-from app.services.processing_containers import create_processing_container
+from app.services.processing_containers import create_processing_container, get_processing_container
 from app.services.processing_stages import create_processing_stage, get_processing_stage
-from app.services.task_definitions import create_task_definition
+from app.services.task_definitions import create_task_definition, get_task_definitions
 from app.services.stages_by_task_definitions import create_stage_by_task_definition
 
 
@@ -51,8 +52,8 @@ async def create_task_definition_endpoint(
     task_definition = TaskDefinitionRequest(**task_definition)
 
     task_definition_db = TaskDefinitionCreate(
-        type_name=task_definition.type_name,
-        type_description=task_definition.type_description,
+        definition_name=task_definition.definition_name,
+        definition_description=task_definition.definition_description,
         created_by_id=current_user.id
     )
 
@@ -99,6 +100,34 @@ async def create_task_definition_endpoint(
                 await create_processing_container(processing_container_db)
 
     return created_task_definition
+
+
+@router.get("/")
+async def get_task_definitions_endpoint(current_user: SysUser = Depends(RoleChecker([RoleEnum.PROFESSOR]))):
+    task_definitions = await get_task_definitions()
+    results = []
+    for task in task_definitions:
+        task_dict = {
+            "id": task.id,
+            "definition_name": task.definition_name,
+            "definition_description": task.definition_description,
+            "stages": []
+        }
+        for stage_by_task in task.stages:
+            stage = stage_by_task.processing_stage
+            stage_dict = {
+                "stage_name": stage.stage_name,
+                "stage_description": stage.stage_description,
+                "container": {
+                    "container_name": stage.container.container_name,
+                    "container_description": stage.container.container_description,
+                    "remote_storage_path": stage.container.remote_storage_path,
+                    "run_command": stage.container.run_command
+                }
+            }
+            task_dict["stages"].append(stage_dict)
+        results.append(task_dict)
+    return results
 
 
 
