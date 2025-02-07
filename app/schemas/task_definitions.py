@@ -7,11 +7,11 @@ TaskDefinitionPydantic = pydantic_model_creator(TaskDefinition, name="TaskDefini
 TaskDefinitionPydanticIn = pydantic_model_creator(TaskDefinition, name="TaskDefinitionIn", exclude_readonly=True)
 
 class TaskDefinitionRequest(BaseModel):
-    type_name: str
-    type_description: str
+    definition_name: str
+    definition_description: str
     stages: list[ProcessingStageRequest]
 
 class TaskDefinitionCreate(BaseModel):
-    type_name: str
-    type_description: str
+    definition_name: str
+    definition_description: str
     created_by_id: int
