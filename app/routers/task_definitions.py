@@ -5,6 +5,7 @@ from typing import Annotated, List
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, Form
 
 from app.auth.dependencies import RoleChecker
+from app.helpers.ftp_utils import upload_to_ftp
 from app.models.processing_stage import ProcessingStage
 from app.models.sysuser import RoleEnum, SysUser
 from app.models.task_definition import TaskDefinition
@@ -20,26 +21,6 @@ from app.services.stages_by_task_definitions import create_stage_by_task_definit
 
 router = APIRouter(prefix="/task-definitions", tags=["task_definitions"])
 
-def upload_to_ftp(file: UploadFile) -> str:
-    ftp_host = "localhost"
-    ftp_user = "one"
-    ftp_password = "123"
-    ftp_directory = "/ftp/one/"
-
-    try:
-        with ftplib.FTP() as ftp:
-            ftp.connect(ftp_host, 21)
-            ftp.login(ftp_user, ftp_password)
-            ftp.cwd(ftp_directory)
-
-            server_filename = file.filename
-
-            with file.file as f:
-                ftp.storbinary(f"STOR {server_filename}", f)
-
-            return f"{ftp_directory}{server_filename}"
-    except ftplib.all_errors as e:
-        raise HTTPException(status_code=500, detail=f"FTP error: {str(e)}")
 
 @router.post("/")
 async def create_task_definition_endpoint(
