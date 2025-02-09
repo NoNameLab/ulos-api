@@ -1,11 +1,11 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 
 from app.schemas.task_logs import TaskLogCreate, TaskLogPydantic, TaskLogRequest
 from app.schemas.task_metrics import TaskMetricsPydantic
 from app.schemas.tasks import TaskPydantic
 from app.services.task_logs import create_task_log
 from app.services.task_metrics import requeue_task
-from app.services.tasks import get_tasks
+from app.services.tasks import get_tasks, update_task
 
 
 router = APIRouter(prefix="/tasks", tags=["tasks"])
@@ -20,8 +20,11 @@ async def get_task_endpoint(task_id: int):
     return await get_task(task_id)
 
 @router.patch("/{task_id}", response_model=TaskPydantic)
-async def update_task_endpoint(task_id: int):
-    return await update_task(task_id)
+async def update_task_endpoint(task_id: int, stage_status_updates: dict):
+    try:
+        return await update_task(task_id, stage_status_updates)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
 @router.patch("/{task_id}/requeue", response_model=TaskMetricsPydantic)
 async def requeue_task_endpoint(task_id: int):
