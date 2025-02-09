@@ -1,8 +1,10 @@
 from fastapi import APIRouter
 
 from app.schemas.task_logs import TaskLogCreate, TaskLogPydantic, TaskLogRequest
+from app.schemas.task_metrics import TaskMetricsPydantic
 from app.schemas.tasks import TaskPydantic
 from app.services.task_logs import create_task_log
+from app.services.task_metrics import requeue_task
 from app.services.tasks import get_tasks
 
 
@@ -21,7 +23,7 @@ async def get_task_endpoint(task_id: int):
 async def update_task_endpoint(task_id: int):
     return await update_task(task_id)
 
-@router.patch("/{task_id}/requeue", response_model=TaskPydantic)
+@router.patch("/{task_id}/requeue", response_model=TaskMetricsPydantic)
 async def requeue_task_endpoint(task_id: int):
     return await requeue_task(task_id)
 
