@@ -11,6 +11,10 @@ async def create_task(task: TaskCreate):
 async def get_tasks():
     return await Task.all()
 
+async def get_task(task_id: int):
+    task = await Task.get_or_none(id=task_id)
+    return await TaskPydantic.from_tortoise_orm(task) if task else None
+
 async def update_task(task_id: int, stage_status_updates: dict):
     for stage_name, new_status_id in stage_status_updates.items():
         stage = await get_processing_stage_by_name(stage_name)

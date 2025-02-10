@@ -5,7 +5,7 @@ from app.schemas.task_metrics import TaskMetricsPydantic
 from app.schemas.tasks import TaskPydantic
 from app.services.task_logs import create_task_log
 from app.services.task_metrics import requeue_task
-from app.services.tasks import get_tasks, update_task
+from app.services.tasks import get_task, get_tasks, update_task
 
 
 router = APIRouter(prefix="/tasks", tags=["tasks"])
