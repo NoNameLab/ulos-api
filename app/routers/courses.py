@@ -1,4 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
+from app.schemas.assignments import AssignmentCreate, AssignmentRequest
+from app.services.assignments import create_assignment
 from app.services.courses import create_course, get_course
 from app.schemas.courses import CourseCreate, CoursePydantic
 from app.auth.dependencies import RoleChecker, verify_course_creator
@@ -21,3 +23,8 @@ async def get_course_endpoint(course_id: int, course = Depends(verify_course_cre
     if not course:
         raise HTTPException(status_code=404, detail="Course not found")
     return course
+
+@router.post("/{course_id}/assignments", status_code=201)
+async def create_assignment_endpoint(course_id: int, assignment: AssignmentRequest, current_user: SysUser = Depends(RoleChecker([RoleEnum.PROFESSOR]))):
+    assignment = AssignmentCreate(course_id=course_id, **assignment.dict(), created_by_id=current_user.id)
+    return await create_assignment(assignment)
