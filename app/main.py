@@ -25,7 +25,8 @@ try:
     register_tortoise(
         app,
         config=TORTOISE_ORM,
-        add_exception_handlers=True
+        add_exception_handlers=True,
+        generate_schemas=True
     )
 except db_exception.ConfigurationError as e:
     print(f"An error has ocurred while configuring the database: {e}")
