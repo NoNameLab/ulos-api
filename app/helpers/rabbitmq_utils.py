@@ -15,8 +15,8 @@ def publish_to_rabbitmq(task_id: int, user_id: int, task_definition_name: str, r
         channel.exchange_declare(exchange=exchange_name, exchange_type='direct', durable=True)
 
         message = json.dumps({
-            "taskId": task_id,
-            "taskOwnerId": user_id,
+            "taskId": str(task_id),
+            "taskOwnerId": str(user_id),
             "taskType": task_definition_name,
             "filePath": remote_storage_path,
             "containerImagesPaths": container_images_paths,

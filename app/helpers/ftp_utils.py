@@ -18,6 +18,6 @@ def upload_to_ftp(file: UploadFile) -> str:
             with file.file as f:
                 ftp.storbinary(f"STOR {server_filename}", f)
 
-            return f"{ftp_directory}{server_filename}"
+            return f"{server_filename}"
     except ftplib.all_errors as e:
         raise HTTPException(status_code=500, detail=f"FTP error: {str(e)}")
