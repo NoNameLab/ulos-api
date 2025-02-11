@@ -92,7 +92,7 @@ The ULOS API is built to serve as the backend interface for faculty, students, a
          app,
          config=TORTOISE_ORM,
          add_exception_handlers=True,
-         generate_schemas=True  # Set to False after initial setup
+         generate_schemas=False  # Set to False after initial setup
       )
    except db_exception.ConfigurationError as e:
       print(f"An error has ocurred while configuring the database: {e}")
