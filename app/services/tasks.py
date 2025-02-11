@@ -9,7 +9,7 @@ async def create_task(task: TaskCreate):
     return await TaskPydantic.from_tortoise_orm(task_obj)
 
 async def get_tasks():
-    return await Task.all()
+    return await TaskPydantic.from_queryset(Task.all())
 
 async def get_task(task_id: int):
     task = await Task.get_or_none(id=task_id)
