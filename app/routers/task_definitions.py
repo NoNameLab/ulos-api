@@ -15,7 +15,7 @@ from app.schemas.stages_by_task_definitions import StageByTaskDefinitionCreate
 from app.schemas.task_definitions import TaskDefinitionRequest, TaskDefinitionCreate
 from app.services.processing_containers import create_processing_container, get_processing_container
 from app.services.processing_stages import create_processing_stage, get_processing_stage
-from app.services.task_definitions import create_task_definition, get_task_definitions
+from app.services.task_definitions import create_task_definition, delete_task_definition, get_task_definitions, update_task_definition
 from app.services.stages_by_task_definitions import create_stage_by_task_definition
 
 
@@ -111,5 +111,32 @@ async def get_task_definitions_endpoint(current_user: SysUser = Depends(RoleChec
     return results
 
 
+@router.put("/{task_definition_id}")
+async def update_task_definition_endpoint(
+    task_definition_id: int,
+    task_definition: TaskDefinitionRequest,
+    current_user: SysUser = Depends(RoleChecker([RoleEnum.PROFESSOR]))
+):
+    task_definition_db = TaskDefinitionCreate(
+        definition_name=task_definition.definition_name,
+        definition_description=task_definition.definition_description,
+        created_by_id=current_user.id
+    )
 
+    updated_task_definition = await update_task_definition(task_definition_db)
+    if not updated_task_definition:
+        raise HTTPException(status_code=404, detail="Task definition not found")
+
+    return updated_task_definition
+
+
+@router.delete("/{task_definition_id}", status_code=204)
+async def delete_task_definition_endpoint(
+    task_definition_id: int,
+    current_user: SysUser = Depends(RoleChecker([RoleEnum.PROFESSOR]))
+):
+    deleted = await delete_task_definition(task_definition_id)
+    if not deleted:
+        raise HTTPException(status_code=404, detail="Task definition not found")
+    return {"detail": "Task definition deleted successfully"}
 
