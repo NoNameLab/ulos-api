@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from app.schemas.assignments import AssignmentCreate, AssignmentRequest
-from app.services.assignments import create_assignment
+from app.services.assignments import create_assignment, get_assignments_by_course
 from app.services.courses import create_course, get_course, get_courses_by_user
 from app.schemas.courses import CourseCreate, CoursePydantic
 from app.auth.dependencies import RoleChecker, get_current_user, verify_course_creator
@@ -32,3 +32,8 @@ async def create_assignment_endpoint(course_id: int, assignment: AssignmentReque
 @router.get("/")
 async def get_courses_by_user_endpoint(current_user: SysUser = Depends(get_current_user)):
     return await get_courses_by_user(current_user.id)
+
+
+@router.get("/{course_id}/assignments")
+async def get_assignments_by_course_endpoint(course_id: int, current_user: SysUser = Depends(verify_course_creator)):
+    return await get_assignments_by_course(course_id)

@@ -23,3 +23,7 @@ async def update_assignment(assignment_id: int, assignment: AssignmentCreate):
 async def delete_assignment(assignment_id: int):
     deleted_count = await Assignment.filter(id=assignment_id).delete()
     return deleted_count > 0
+
+
+async def get_assignments_by_course(course_id: int):
+    return await Assignment.filter(course_id=course_id)
