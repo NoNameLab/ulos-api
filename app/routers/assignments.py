@@ -1,13 +1,14 @@
-from fastapi import APIRouter, Depends, UploadFile
+from fastapi import APIRouter, Depends, HTTPException, UploadFile
 
 from app.auth.dependencies import RoleChecker
 from app.helpers.ftp_utils import upload_to_ftp
 from app.helpers.rabbitmq_utils import publish_to_rabbitmq
 from app.models.sysuser import RoleEnum, SysUser
+from app.schemas.assignments import AssignmentCreate
 from app.schemas.task_metrics import TaskMetricsCreate
 from app.schemas.task_stage_statuses import TaskStageStatusCreate
 from app.schemas.tasks import TaskCreate
-from app.services.assignments import get_assignment
+from app.services.assignments import delete_assignment, get_assignment, update_assignment
 from app.services.stages_by_task_definitions import get_stages_by_task_definition
 from app.services.task_metrics import create_task_metrics
 from app.services.task_stage_statuses import create_task_stage_status
@@ -46,3 +47,19 @@ async def submit_assignment_endpoint(assignment_id: int, file: UploadFile, curre
 
 
     return task
+
+
+@router.put("/{assignment_id}")
+async def update_assignment_endpoint(assignment_id: int, assignment: AssignmentCreate, current_user: SysUser = Depends(RoleChecker([RoleEnum.PROFESSOR]))):
+    updated_assignment = await update_assignment(assignment_id, assignment)
+    if not updated_assignment:
+        raise HTTPException(status_code=404, detail="Assignment not found")
+    return updated_assignment
+
+
+@router.delete("/{assignment_id}", status_code=204)
+async def delete_assignment_endpoint(assignment_id: int, current_user: SysUser = Depends(RoleChecker([RoleEnum.PROFESSOR]))):
+    deleted = await delete_assignment(assignment_id)
+    if not deleted:
+        raise HTTPException(status_code=404, detail="Assignment not found")
+    return {"detail": "Assignment deleted successfully"}
