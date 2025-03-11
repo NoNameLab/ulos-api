@@ -20,12 +20,18 @@ async def authenticate_user(user: SysUserLogin):
     return sysuser
 
 async def login_user(user: SysUserLogin):
-    """Login a user and return a token"""
+    """Login a user and return a token along with the assigned role"""
     sysuser = await authenticate_user(user)
     if not sysuser:
         return None
+
     access_token = create_access_token(data={"sub": str(sysuser.id)})
-    return Token(access_token=access_token, token_type="bearer")
+
+    return {
+        "access_token": access_token,
+        "token_type": "bearer",
+        "role": sysuser.assigned_role
+    }
 
 async def get_sysuser(sysuser_id):
     """Get a user by id"""

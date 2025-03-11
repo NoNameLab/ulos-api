@@ -14,9 +14,11 @@ async def register_user(user: SysUserCreate):
     new_user = await create_sysuser(user)
     return {"message": "User registered successfully", "user": new_user}
 
-@router.post("/login", response_model=Token)
+@router.post("/login")
 async def login_user_endpoint(user: SysUserLogin):
-    token = await login_user(user)
-    if not token:
+    login_data = await login_user(user)
+
+    if not login_data:
         raise HTTPException(status_code=401, detail="Invalid email or password")
-    return token
+
+    return login_data
