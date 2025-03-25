@@ -26,4 +26,5 @@ async def delete_assignment(assignment_id: int):
 
 
 async def get_assignments_by_course(course_id: int):
-    return await Assignment.filter(course_id=course_id)
+    assignments = Assignment.filter(course_id=course_id).prefetch_related("task_definition")
+    return await AssignmentPydantic.from_queryset(assignments)
