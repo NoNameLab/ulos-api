@@ -35,5 +35,5 @@ async def get_courses_by_user_endpoint(current_user: SysUser = Depends(get_curre
 
 
 @router.get("/{course_id}/assignments")
-async def get_assignments_by_course_endpoint(course_id: int, current_user: SysUser = Depends(verify_course_creator)):
+async def get_assignments_by_course_endpoint(course_id: int):
     return await get_assignments_by_course(course_id)

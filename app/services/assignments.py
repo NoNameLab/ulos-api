@@ -1,4 +1,6 @@
+from fastapi import HTTPException
 from app.models.assignment import Assignment
+from app.models.task import Task
 from app.schemas.assignments import AssignmentCreate, AssignmentPydantic
 
 
@@ -13,9 +15,15 @@ async def get_assignment(assignment_id: int):
 
 
 async def update_assignment(assignment_id: int, assignment: AssignmentCreate):
-    assignment_obj = await Assignment.get_or_none(id=assignment_id)
+    assignment_obj = await Assignment.get_or_none(id=assignment_id).prefetch_related("tasks")
+
     if not assignment_obj:
         return None
+
+    tasks_count = await Task.filter(assignment_id=assignment_id).count()
+    if tasks_count > 0:
+        raise HTTPException(status_code=400, detail="No se puede actualizar la tarea porque ya tiene envíos relacionados.")
+
     await assignment_obj.update_from_dict(assignment.model_dump(exclude_unset=True)).save()
     return await AssignmentPydantic.from_tortoise_orm(assignment_obj)
 
