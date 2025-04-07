@@ -20,6 +20,11 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
 
+    SMTP_USER: str = ""
+    SMTP_PASSWORD: str = ""
+    SMTP_HOST: str = "smtp.gmail.com"
+    SMTP_PORT: int = 465
+
     model_config = SettingsConfigDict(case_sensitive=True, env_file=ENV_PATH)
 
 env = None
