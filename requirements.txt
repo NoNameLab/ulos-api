@@ -4,7 +4,6 @@ email-validator
 fastapi
 openpyxl
 pandas
-passlib
 pika
 pydantic
 pydantic-settings
