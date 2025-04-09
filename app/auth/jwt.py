@@ -20,7 +20,8 @@ def create_access_token(
 
 def decode_token(token: str):
     try:
-        return jwt.decode(token, env.ACCESS_TOKEN_SECRET_KEY, env.ACCESS_TOKEN_ALGORITHM).get("sub")
+        payload = jwt.decode(token, env.ACCESS_TOKEN_SECRET_KEY, algorithms=[env.ACCESS_TOKEN_ALGORITHM])
+        return payload
     except JWTError as e:
         print(e)
         print("Error decoding token")

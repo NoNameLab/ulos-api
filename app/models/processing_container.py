@@ -9,5 +9,4 @@ class ProcessingContainer(Model):
     processing_stage = fields.OneToOneField("models.ProcessingStage", related_name="container")
     remote_storage_path = fields.CharField(max_length=255, unique=True)
     run_command = fields.TextField(null=True)
-    created_by = fields.ForeignKeyField("models.SysUser", related_name="created_containers")
     creation_timestamp = fields.DatetimeField(auto_now_add=True)

@@ -1,7 +1,9 @@
+from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, Query
 
 from app.auth.dependencies import RoleChecker
-from app.models.sysuser import RoleEnum, SysUser
+from app.models.course_user import RoleEnum
+from app.models.sysuser import SysUser
 from app.models.task import Task
 from app.schemas.task_logs import TaskLogCreate, TaskLogPydantic, TaskLogRequest
 from app.schemas.task_metrics import TaskMetricsPydantic
@@ -9,6 +11,7 @@ from app.schemas.tasks import TaskPydantic
 from app.services.task_logs import create_task_log
 from app.services.task_metrics import requeue_task
 from app.services.tasks import get_task, get_task_by_assignment_and_user, get_tasks, update_task
+
 
 
 router = APIRouter(prefix="/tasks", tags=["tasks"])
@@ -22,14 +25,12 @@ async def get_tasks_endpoint():
 async def get_task_endpoint(task_id: int):
     return await get_task(task_id)
 
-@router.get("", response_model=TaskPydantic)
+@router.get("", response_model=Optional[TaskPydantic])
 async def get_task_by_assignment_and_user_endpoint(
     assignment_id: int = Query(...),
     current_user: SysUser = Depends(RoleChecker([RoleEnum.STUDENT]))
 ):
     task = await get_task_by_assignment_and_user(assignment_id, current_user.id)
-    if not task:
-        raise HTTPException(status_code=404, detail="Task not found")
     return task
 
 

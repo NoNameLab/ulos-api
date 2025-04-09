@@ -3,7 +3,8 @@ from fastapi import APIRouter, Depends, HTTPException, UploadFile
 from app.auth.dependencies import RoleChecker
 from app.helpers.ftp_utils import upload_to_ftp
 from app.helpers.rabbitmq_utils import publish_to_rabbitmq
-from app.models.sysuser import RoleEnum, SysUser
+from app.models.course_user import RoleEnum
+from app.models.sysuser import SysUser
 from app.schemas.assignments import AssignmentCreate, AssignmentRequest
 from app.schemas.task_metrics import TaskMetricsCreate
 from app.schemas.task_stage_statuses import TaskStageStatusCreate

@@ -1,7 +1,7 @@
 from fastapi import HTTPException
 from app.models.course import Course
-from app.models.course_user import CourseUser
-from app.models.sysuser import RoleEnum, SysUser
+from app.models.course_user import CourseUser, RoleEnum
+from app.models.sysuser import SysUser
 from app.schemas.courses import CoursePydantic
 
 import secrets
@@ -38,15 +38,23 @@ async def process_excel_file(df: pd.DataFrame, course, background_tasks):
         generated_password = secrets.token_urlsafe(8)
         hashed_password = get_password_hash(generated_password)
 
-        user, created = await SysUser.get_or_create(email=email, defaults={
-            "password": hashed_password,
-            "assigned_role": RoleEnum.STUDENT,
-        })
+        user, created = await SysUser.get_or_create(
+            email=email,
+            defaults={
+                "password": hashed_password
+            }
+        )
 
         if created:
-            await CourseUser.get_or_create(course=course, user=user)
-
             background_tasks.add_task(send_registration_email, user.email, generated_password, course.course_name)
+
+
+        await CourseUser.get_or_create(
+            course=course,
+            user=user,
+            defaults={"course_role": RoleEnum.STUDENT}
+        )
+
 
 
 
@@ -71,5 +79,6 @@ async def get_students_by_course(course_id: int):
     if not course:
         raise HTTPException(status_code=404, detail="Curso no encontrado")
 
-    students = await SysUser.filter(courses__course_id=course_id, assigned_role=RoleEnum.STUDENT).all()
+    course_users = await CourseUser.filter(course=course, course_role=RoleEnum.STUDENT).prefetch_related("user").all()
+    students = [cu.user for cu in course_users]
     return students

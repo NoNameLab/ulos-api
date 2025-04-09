@@ -10,6 +10,8 @@ from app.models.task_definition import TaskDefinition
 from app.models.task_log import TaskLog
 from app.models.task_metrics import TaskMetrics
 from app.models.task_stage_status import TaskStageStatus
+from app.models.task_stage_metrics import TaskStageMetrics
 from app.models.task import Task
 
-__all__ = ["Assignment", "CourseUser", "Course", "ProcessingContainer", "ProcessingStage", "ProcessingStatus", "StageByTaskDefinition", "SysUser", "TaskDefinition", "TaskLog", "TaskMetrics", "TaskStageStatus", "Task"]
+__all__ = ["Assignment", "CourseUser", "Course", "ProcessingContainer", "ProcessingStage", "ProcessingStatus",
+           "StageByTaskDefinition", "SysUser", "TaskDefinition", "TaskLog", "TaskMetrics", "TaskStageStatus", "TaskStageMetrics", "Task"]

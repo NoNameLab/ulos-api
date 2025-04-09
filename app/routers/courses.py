@@ -2,12 +2,13 @@ import io
 from fastapi import APIRouter, BackgroundTasks, Depends, File, HTTPException, UploadFile
 import pandas as pd
 from app.models.course import Course
+from app.models.course_user import RoleEnum
 from app.schemas.assignments import AssignmentCreate, AssignmentRequest
 from app.services.assignments import create_assignment, get_assignments_by_course
 from app.services.courses import create_course, get_course, get_courses_by_user, get_students_by_course, process_excel_file, remove_user_from_course
 from app.schemas.courses import CourseCreate, CoursePydantic
-from app.auth.dependencies import RoleChecker, get_current_user, verify_course_creator
-from app.models.sysuser import SysUser, RoleEnum
+from app.auth.dependencies import RoleChecker, get_current_user, verify_course_professor
+from app.models.sysuser import SysUser
 
 router = APIRouter(prefix="/courses", tags=["courses"])
 
@@ -21,7 +22,7 @@ async def create_course_endpoint(
     return await create_course(course_data)
 
 @router.get("/{course_id}", response_model=CoursePydantic)
-async def get_course_endpoint(course_id: int, course = Depends(verify_course_creator)):
+async def get_course_endpoint(course_id: int, course = Depends(verify_course_professor)):
     course = await get_course(course_id)
     if not course:
         raise HTTPException(status_code=404, detail="Course not found")
