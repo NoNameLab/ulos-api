@@ -5,7 +5,7 @@ fastapi
 openpyxl
 pandas
 pika
-pydantic
+pydantic==2.10.6
 pydantic-settings
 python-dotenv
 python-jose[cryptography]
