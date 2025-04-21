@@ -1,14 +1,17 @@
-from fastapi import APIRouter, Depends, HTTPException, UploadFile
+from typing import List
+from fastapi import APIRouter, Depends, HTTPException, Path, UploadFile
 
 from app.auth.dependencies import RoleChecker
 from app.helpers.ftp_utils import upload_to_ftp
 from app.helpers.rabbitmq_utils import publish_to_rabbitmq
 from app.models.course_user import RoleEnum
 from app.models.sysuser import SysUser
+from app.schemas.assignment_tasks import StudentTaskStatus
 from app.schemas.assignments import AssignmentCreate, AssignmentRequest
 from app.schemas.task_metrics import TaskMetricsCreate
 from app.schemas.task_stage_statuses import TaskStageStatusCreate
 from app.schemas.tasks import TaskCreate
+from app.services.assignment_tasks import get_assignment_tasks_statuses
 from app.services.assignments import delete_assignment, get_assignment, update_assignment
 from app.services.stages_by_task_definitions import get_stages_by_task_definition
 from app.services.task_metrics import create_task_metrics
@@ -91,3 +94,14 @@ async def delete_assignment_endpoint(assignment_id: int, current_user: SysUser =
     if not deleted:
         raise HTTPException(status_code=404, detail="Assignment not found")
     return {"detail": "Assignment deleted successfully"}
+
+
+@router.get(
+    "/{assignment_id}/tasks",
+    response_model=List[StudentTaskStatus],
+    summary="Obtener estados de parsing y execution por estudiante"
+)
+async def list_assignment_tasks(
+    assignment_id: int = Path(..., description="ID de la asignación")
+):
+    return await get_assignment_tasks_statuses(assignment_id)
