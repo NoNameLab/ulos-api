@@ -45,13 +45,25 @@ async def submit_assignment_endpoint(assignment_id: int, file: UploadFile, curre
 
         await create_task_stage_status(task_stage_status)
 
-    stages_names = [stage.stage_name for stage in stages]
+    stages_info = [
+        [
+            stage.stage_name,
+            stage.container.remote_storage_path,
+            stage.container.run_command
+        ]
+        for stage in stages
+    ]
+    task_definition_payload = {
+        "definitionName": assignment.task_definition.definition_name,
+        "stages": stages_info
+    }
 
-    container_images_paths = [
-        stage.container.remote_storage_path for stage in stages]
-
-    publish_to_rabbitmq(task.id, current_user.id, assignment.task_definition.definition_name,
-                        remote_storage_path, container_images_paths, stages_names)
+    publish_to_rabbitmq(
+        task_id=task.id,
+        user_id=current_user.id,
+        remote_storage_path=remote_storage_path,
+        task_definition=task_definition_payload
+    )
 
     return task
 
