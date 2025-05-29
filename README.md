@@ -8,9 +8,9 @@ The ULOS API is built to serve as the backend interface for faculty, students, a
 
 ## Table of Contents
 
-1. [Installation](#installation)
-2. [Running the Project](#running-the-project)
-3. [API Endpoints](#api-endpoints)
+1.  [Installation](#installation)
+2.  [Running the Project](#running-the-project)
+3.  [API Endpoints](#api-endpoints)
 
 ---
 
@@ -18,103 +18,128 @@ The ULOS API is built to serve as the backend interface for faculty, students, a
 
 ### Requirements
 
-- **Python 3.8+**
-- **PostgreSQL**
+* **Python 3.8+** (for local development without Docker)
+* **PostgreSQL** (for local development without Docker)
+* **Docker and Docker Compose** (for containerized deployment)
 
 ### Steps
 
-1. **Clone the Repository**:
+1.  **Clone the Repository**:
 
-   ```bash
-   git clone https://github.com/YOUR_USERNAME/ulos-api.git
-   cd ulos-api
-   ```
+    ```bash
+    git clone [https://github.com/YOUR_USERNAME/ulos-api.git](https://github.com/YOUR_USERNAME/ulos-api.git)
+    cd ulos-api
+    ```
 
-2. **Create and Activate a Virtual Environment**:
+2.  **Configure Environment Variables**:
 
-   - **Windows**:
+    Copy the `.env.example` file to `.env` and edit it to include your desired settings, especially database credentials if you plan to run locally or if Docker needs them for initialization.
 
-     ```bash
-     python -m venv .venv
-     .\.venv\Scripts\activate
-     ```
+    ```bash
+    cp .env.example .env
+    ```
 
-   - **macOS/Linux**:
+    Then, open the `.env` file and update all the necessary fields (e.g., `DATABASE_USER`, `DATABASE_PASSWORD`, `DATABASE_NAME`). These will be used by both Docker and local setups.
 
-     ```bash
-     python -m venv .venv
-     source .venv/bin/activate
-     ```
+3.  **For Local Development (Without Docker) Only - Virtual Environment and Dependencies**:
 
-3. **Install Dependencies**:
+    * **Create and Activate a Virtual Environment**:
+        * **Windows**:
+            ```bash
+            python -m venv .venv
+            .\.venv\Scripts\activate
+            ```
+        * **macOS/Linux**:
+            ```bash
+            python -m venv .venv
+            source .venv/bin/activate
+            ```
+    * **Install Dependencies**:
+        ```bash
+        pip install -r requirements.txt
+        ```
 
-   ```bash
-   pip install -r requirements.txt
-   ```
+4.  **Database Schema Generation (Tortoise ORM)**:
 
-4. **Configure the Database**:
+    The database schema is managed by Tortoise ORM.
+    * **When using Docker**: The API service (`app/main.py`) should have `generate_schemas=True` for the `register_tortoise` function. The initial data seeding (from `app/db/init/seed.sql`) will be handled automatically by the PostgreSQL container if the database is empty.
+    * **For local development (first-time setup)**: Ensure the `generate_schemas` flag is set to `True` in `app/main.py` before the first run.
 
-   Copy the `.env.example` file to `.env` and edit it to include your database credentials:
+    In the `app/main.py` file, ensure `generate_schemas` is appropriately set:
 
-   ```bash
-   cp .env.example .env
-   ```
+    ```python
+    # app/main.py
+    try:
+        register_tortoise(
+            app,
+            config=TORTOISE_ORM,
+            add_exception_handlers=True,
+            generate_schemas=True  # Set to True for Docker and first-time local setup
+        )
+    except db_exception.ConfigurationError as e:
+        print(f"An error has occurred while configuring the database: {e}")
+        raise e
+    except db_exception.DBConnectionError as e:
+        print(f"An error has occurred while connecting to the database: {e}")
+        raise e
+    ```
 
-   Then, open the .env file and update all the neccesary fields
-
-5. **Generate Database Schemas (First-Time Setup)**:
-
-   The database schema will be generated automatically during the first run of the project. This process is managed by the `register_tortoise` function in `app/main.py`. Ensure that the `generate_schemas` flag is set to True before the first run.
-
-   In the `app/main.py` file, set the `generate_schemas` parameter to True in the register_tortoise function:
-
-   ```python
-   try:
-      register_tortoise(
-         app,
-         config=TORTOISE_ORM,
-         add_exception_handlers=True,
-         generate_schemas=True  # Set to True for first-time setup
-      )
-   except db_exception.ConfigurationError as e:
-      print(f"An error has ocurred while configuring the database: {e}")
-      raise e
-   except db_exception.DBConnectionError as e:
-      print(f"An error has ocurred while connecting to the database: {e}")
-      raise e
-   ```
-
-   After running the project for the first time, set `generate_schemas` to `False` to avoid creating duplicate entries in the database:
-
-   ```python
-   try:
-      register_tortoise(
-         app,
-         config=TORTOISE_ORM,
-         add_exception_handlers=True,
-         generate_schemas=False  # Set to False after initial setup
-      )
-   except db_exception.ConfigurationError as e:
-      print(f"An error has ocurred while configuring the database: {e}")
-      raise e
-   except db_exception.DBConnectionError as e:
-      print(f"An error has ocurred while connecting to the database: {e}")
-      raise e
-   ```
+    **Important**: After the schemas are generated successfully (either with Docker or the first local run), you might consider setting `generate_schemas=False` for subsequent local runs to prevent accidental alterations or if startup speed is a concern. However, for Docker deployments, keeping it `True` is generally safer as it ensures schemas are present, especially with ephemeral containers or fresh volumes. The `seed.sql` script will only run if the database is truly empty, preventing duplicate seed data.
 
 ---
 
 ## Running the Project
 
-Start the FastAPI server:
+You can run the project using Docker (recommended for ease of setup and consistency) or locally.
 
-```bash
-uvicorn app.main:app --reload
-```
+### Using Docker 🐳
 
-Visit the server at [http://127.0.0.1:8000](http://127.0.0.1:8000).
+This method uses Docker Compose to build the API image and run both the API and PostgreSQL database containers.
 
-> **Note**: If you're running the project for the first time, ensure that `generate_schemas=True` in `app/config/database.py`. After the initial run, change it to `False` to prevent duplicate entries.
+1.  **Ensure Docker Desktop is running.**
+2.  **Build and Start Containers**:
+    Navigate to the root directory of the project (where `docker-compose.yml` is located) and run:
+    ```bash
+    docker-compose up --build
+    ```
+    To run in detached mode (in the background), use:
+    ```bash
+    docker-compose up --build -d
+    ```
+    The API will be accessible at [http://localhost:8000](http://localhost:8000). The PostgreSQL database will be running, and the `app/db/init/seed.sql` script will be executed automatically if the database volume (`db_data`) is empty, populating the initial data. Database schemas will be generated by the API service on startup.
+
+3.  **To Stop Containers**:
+    If running in the foreground, press `CTRL+C`. If running in detached mode, use:
+    ```bash
+    docker-compose down
+    ```
+    To stop and remove volumes (including database data, be careful!):
+    ```bash
+    docker-compose down -v
+    ```
+
+### Locally (Without Docker) 🧑‍💻
+
+This method requires you to have Python and PostgreSQL installed and configured on your system.
+
+1.  **Ensure you have completed steps 1, 2, and 3 from the [Installation](#installation) section.**
+2.  **Ensure your PostgreSQL server is running** and accessible with the credentials specified in your `.env` file.
+3.  **Manually Seed the Database (If Empty and First Time)**:
+    If this is your first time and the database is empty, you'll need to manually run the `app/db/init/seed.sql` script against your database. You can use a tool like `psql` or any SQL client.
+    Example using `psql`:
+    ```bash
+    psql -U YOUR_DATABASE_USER -d YOUR_DATABASE_NAME -a -f app/db/init/seed.sql
+    ```
+    *(Replace `YOUR_DATABASE_USER` and `YOUR_DATABASE_NAME` with your actual credentials from `.env`)*.
+    The Tortoise ORM `generate_schemas=True` setting in `app/main.py` will create the tables.
+
+4.  **Start the FastAPI Server**:
+    ```bash
+    uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+    ```
+    Visit the server at [http://127.0.0.1:8000](http://127.0.0.1:8000).
+
+> **Note**: The `generate_schemas=True` setting in `app/main.py` handles the creation of database tables. For Docker, the `seed.sql` handles initial data. For local setup, you need to run `seed.sql` manually if the DB is empty. After the initial setup, for local development, you might set `generate_schemas=False`.
 
 ---
 
@@ -122,27 +147,27 @@ Visit the server at [http://127.0.0.1:8000](http://127.0.0.1:8000).
 
 Here's a quick overview of the main endpoints:
 
-| Method   | Endpoint                               | Description                                                                                                                                                                                                                                                                              |
-| -------- | -------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `POST`   | `/task-definitions`                    | Create a task definition and select the processing stages to include. It also uploads the image file from the container to the FTP server for each selected stage.                                                                                                                       |
-| `GET`    | `/task-definitions`                    | Retrieves the list of created task definitions, along with their stages and the image file of the container.                                                                                                                                                                             |
-| `PUT`    | `/task-definitions/{taskDefinitionId}` | Modify the details of a task definition, including its name, description, and associated processing stages.                                                                                                                                                                              |
-| `DELETE` | `/task-definitions/{taskDefinitionId}` | Delete a specific task definition from the system.                                                                                                                                                                                                                                       |
-| `GET`    | `/users/me/courses`                    | Retrieves the list of courses of a user. If the user is a professor, the courses they teach are returned. If the user is a student, the courses they are enrolled in are returned.                                                                                                       |
-| `POST`   | `/courses/{courseId}/assignments`      | Create a new assignment for a specific course.                                                                                                                                                                                                                                           |
-| `GET`    | `/courses/{courseId}/assignments/`     | Get all assignments created for a course, including the assignment name, task type, and due date.                                                                                                                                                                                        |
-| `PUT`    | `/assignments/{assignmentId}`          | Modify the details of an assignment, such as its name, start date, and end date.                                                                                                                                                                                                         |
-| `DELETE` | `/assignments/{assignmentId}`          | Delete a specific assignment of a course.                                                                                                                                                                                                                                                |
-| `GET`    | `/assignments/{assignmentId}/tasks`    | Get students' submissions for a specific assignment, including the status of the parsing and execution stages.                                                                                                                                                                           |
-| `GET`    | `/courses/{courseId}/assignments`      | Get all the assignments for a specific course and, if they have made a submission, view the parsing and execution statuses.                                                                                                                                                              |
-| `POST`   | `/assignments/{assignmentId}/submit`   | Submits a task for a specific assignment. The submission is registered in the system, associating it with the user, the assignment, and the corresponding task definition. It uploads the corresponding file to the FTP server and publishes a message in the queue of the orchestrator. |
-| `GET`    | `/assignments/{assignmentId}`          | Get the submission details for a specific assignment, including processing and status logs.                                                                                                                                                                                              |
-| `POST`   | `/tasks/{taskId}/logs`                 | Adds a new log entry to the task_log table for a specific task.                                                                                                                                                                                                                          |
-| `PATCH`  | `/tasks/{taskId}/requeue`              | Increases the requeue count of a task in the task_metrics table.                                                                                                                                                                                                                         |
-| `PATCH`  | `/tasks/{taskId}`                      | Updates one or multiple statuses (e.g., parsing status, execution status) in the task_stage_status table.                                                                                                                                                                                |
-| `GET`    | `/tasks`                               | Retrieves a list of all tasks stored in the system.                                                                                                                                                                                                                                      |
-| `GET`    | `/tasks/{taskId}`                      | Retrieves detailed information about a specific task.                                                                                                                                                                                                                                    |
-| `POST`   | `/auth/register`                       | Creates a new user account in the system.                                                                                                                                                                                                                                                |
-| `POST`   | `/auth/login`                          | Authenticates a user and returns an access token for session management.                                                                                                                                                                                                                 |
+| Method   | Endpoint                             | Description                                                                                                                                                                                                                                                                                       |
+| :------- | :------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `POST`   | `/task-definitions`                    | Create a task definition and select the processing stages to include. It also uploads the image file from the container to the FTP server for each selected stage.                                                                                                                               |
+| `GET`    | `/task-definitions`                    | Retrieves the list of created task definitions, along with their stages and the image file of the container.                                                                                                                                                                                     |
+| `PUT`    | `/task-definitions/{taskDefinitionId}` | Modify the details of a task definition, including its name, description, and associated processing stages.                                                                                                                                                                                    |
+| `DELETE` | `/task-definitions/{taskDefinitionId}` | Delete a specific task definition from the system.                                                                                                                                                                                                                                               |
+| `GET`    | `/users/me/courses`                    | Retrieves the list of courses of a user. If the user is a professor, the courses they teach are returned. If the user is a student, the courses they are enrolled in are returned.                                                                                                              |
+| `POST`   | `/courses/{courseId}/assignments`      | Create a new assignment for a specific course.                                                                                                                                                                                                                                                   |
+| `GET`    | `/courses/{courseId}/assignments/`     | Get all assignments created for a course, including the assignment name, task type, and due date.                                                                                                                                                                                              |
+| `PUT`    | `/assignments/{assignmentId}`          | Modify the details of an assignment, such as its name, start date, and end date.                                                                                                                                                                                                                 |
+| `DELETE` | `/assignments/{assignmentId}`          | Delete a specific assignment of a course.                                                                                                                                                                                                                                                        |
+| `GET`    | `/assignments/{assignmentId}/tasks`    | Get students' submissions for a specific assignment, including the status of the parsing and execution stages.                                                                                                                                                                                 |
+| `GET`    | `/courses/{courseId}/assignments`      | Get all the assignments for a specific course and, if they have made a submission, view the parsing and execution statuses.                                                                                                                                                                      |
+| `POST`   | `/assignments/{assignmentId}/submit`   | Submits a task for a specific assignment. The submission is registered in the system, associating it with the user, the assignment, and the corresponding task definition. It uploads the corresponding file to the FTP server and publishes a message in the queue of the orchestrator.          |
+| `GET`    | `/assignments/{assignmentId}`          | Get the submission details for a specific assignment, including processing and status logs.                                                                                                                                                                                                      |
+| `POST`   | `/tasks/{taskId}/logs`                 | Adds a new log entry to the task_log table for a specific task.                                                                                                                                                                                                                                  |
+| `PATCH`  | `/tasks/{taskId}/requeue`              | Increases the requeue count of a task in the task_metrics table.                                                                                                                                                                                                                                 |
+| `PATCH`  | `/tasks/{taskId}`                      | Updates one or multiple statuses (e.g., parsing status, execution status) in the task_stage_status table.                                                                                                                                                                                        |
+| `GET`    | `/tasks`                               | Retrieves a list of all tasks stored in the system.                                                                                                                                                                                                                                              |
+| `GET`    | `/tasks/{taskId}`                      | Retrieves detailed information about a specific task.                                                                                                                                                                                                                                            |
+| `POST`   | `/auth/register`                       | Creates a new user account in the system.                                                                                                                                                                                                                                                        |
+| `POST`   | `/auth/login`                          | Authenticates a user and returns an access token for session management.                                                                                                                                                                                                                           |
 
 ---
